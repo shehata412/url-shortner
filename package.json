@@ -13,6 +13,7 @@
   "author": "Omar Shehata",
   "license": "ISC",
   "dependencies": {
+    "@types/sequelize": "^4.28.20",
     "bcrypt": "^5.0.1",
     "body-parser": "^1.19.0",
     "express": "^4.17.1",
