@@ -1,6 +1,7 @@
 import { Sequelize } from "sequelize";
+import UserModel from "./user";
 import dotenv from "dotenv";
-const config = require("../config/config.json");
+import config from "../config/config.json";
 
 dotenv.config();
 
@@ -16,4 +17,6 @@ const sequelize = new Sequelize(
   }
 );
 
-export default sequelize;
+const User = UserModel(sequelize, Sequelize);
+
+export { sequelize, User };
