@@ -5,8 +5,17 @@ import { User } from "../db/models/sequelize";
 const router = express.Router();
 
 type UserData = {
-    username: string;
+    email: string;
     password: string;
+};
+
+const create = async (req: Request, res: Response) => {
+    const userData: UserData = req.body;
+    const user = await User.create({
+        email: userData.email,
+        password: userData.password,
+    });
+    res.json(user);
 };
 
 const show = async (req: Request, res: Response) => {
@@ -22,4 +31,5 @@ const showOne = async (req: Request, res: Response) => {
 export const userRoutes = (app: express.Application) :void => {
     app.get('/user', show);
     app.get ('/user/:id', showOne);
+    app.post('/user', create)
 }
