@@ -5,7 +5,6 @@ import { User } from "../db/models/sequelize";
 
 const router = express.Router();
 
-
 type UserData = {
   id: number;
   email: string;
@@ -28,10 +27,13 @@ const create = async (req: Request, res: Response) => {
       email: userData.email,
       password: userData.password,
     });
-    const userId = user.get('id') as number;
     const userResponse = { ...user.get({ plain: true }) };
-    delete userResponse.password;
-    res.json(userResponse);
+    const token = jwt.sign(
+      { id: userResponse.id, email: userResponse.email },
+      process.env.JWT_SECRET as string,
+      { expiresIn: "30d" }
+    );
+    res.json(token);
   } catch (e) {
     res.status(500).json(e);
   }

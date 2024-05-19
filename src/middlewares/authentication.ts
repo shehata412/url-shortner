@@ -12,19 +12,19 @@ interface UserRequest extends Request {
   };
 }
 
-type User_data = { 
+type User_data = {
   id: number;
   password: string;
   email: string;
 };
-
 
 export const authenticate = async (
   req: UserRequest,
   res: Response,
   next: NextFunction
 ) => {
-  if(req.path === "/login") return next();
+  if (req.path === "/login" || (req.path === "/user" && req.method === "POST"))
+    return next();
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
     return res.status(401).send({ error: "Please authenticate" });
