@@ -9,6 +9,7 @@ interface UserRequest extends Request {
   user?: {
     id: number;
     email: string;
+    isAdmin?: boolean;
   };
 }
 
@@ -16,6 +17,7 @@ type User_data = {
   id: number;
   password: string;
   email: string;
+  isAdmin?: boolean;
 };
 
 export const authenticate = async (
@@ -45,6 +47,7 @@ export const authenticate = async (
     req.user = {
       id: userData.id,
       email: userData.email,
+      isAdmin: userData.isAdmin
     };
     next();
   } catch (e) {
