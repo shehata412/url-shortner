@@ -8,13 +8,12 @@ dotenv.config();
 interface UserRequest extends Request {
   user?: {
     id: number;
-    username: string;
+    email: string;
   };
 }
 
 type User_data = { 
   id: number;
-  username: string;
   password: string;
   email: string;
 };
@@ -25,6 +24,7 @@ export const authenticate = async (
   res: Response,
   next: NextFunction
 ) => {
+  if(req.path === "/login") return next();
   const token = req.header("Authorization")?.replace("Bearer ", "");
   if (!token) {
     return res.status(401).send({ error: "Please authenticate" });
@@ -44,7 +44,7 @@ export const authenticate = async (
     }
     req.user = {
       id: userData.id,
-      username: userData.username,
+      email: userData.email,
     };
     next();
   } catch (e) {

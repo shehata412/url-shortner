@@ -2,34 +2,53 @@ import express, { Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { User } from "../db/models/sequelize";
+
 const router = express.Router();
 
+
 type UserData = {
-    email: string;
-    password: string;
+  id: number;
+  email: string;
+  password: string;
 };
 
 const create = async (req: Request, res: Response) => {
-    const userData: UserData = req.body;
+  if (!req.body.email || !req.body.password)
+    return res.status(400).send({ error: "Please provide email and password" });
+
+  req.body.password = await bcrypt.hash(
+    (req.body.password + process.env.BCRYPT_PASS) as string,
+    Number(process.env.SALT_ROUNDS as string)
+  );
+
+  const userData: UserData = req.body;
+
+  try {
     const user = await User.create({
-        email: userData.email,
-        password: userData.password,
+      email: userData.email,
+      password: userData.password,
     });
-    res.json(user);
+    const userId = user.get('id') as number;
+    const userResponse = { ...user.get({ plain: true }) };
+    delete userResponse.password;
+    res.json(userResponse);
+  } catch (e) {
+    res.status(500).json(e);
+  }
 };
 
-const show = async (req: Request, res: Response) => {
-        const users = await User.findAll();
-        res.json(users);
-}
+const index = async (req: Request, res: Response) => {
+  const users = await User.findAll();
+  res.json(users);
+};
 
 const showOne = async (req: Request, res: Response) => {
-    const user = await User.findByPk(req.params.id);
-    res.json(user);
-}
+  const user = await User.findByPk(req.params.id);
+  res.json(user);
+};
 
-export const userRoutes = (app: express.Application) :void => {
-    app.get('/user', show);
-    app.get ('/user/:id', showOne);
-    app.post('/user', create)
-}
+export const userRoutes = (app: express.Application): void => {
+  app.get("/user", index);
+  app.get("/user/:id", showOne);
+  app.post("/user", create);
+};
