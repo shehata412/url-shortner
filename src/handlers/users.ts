@@ -103,9 +103,19 @@ const login = async (req: Request, res: Response) => {
   }
 };
 
-const showOne = async (req: Request, res: Response) => {
-  const user = await User.findByPk(req.params.id);
-  res.json(user);
+const showOne = async (req: UserRequest, res: Response) => {
+  if (!req.user?.isAdmin && req.user?.id !== Number(req.params.id)) {
+    return res.status(401).send({ error: "Unauthorized" });
+  }
+  try {
+    const user = await User.findByPk(req.params.id);
+    if (!user) return res.status(400).send({ error: "User not found" });
+    const userResponse = { ...user.get({ plain: true }) };
+    delete userResponse.password;
+    res.json(userResponse);
+  } catch (e) {
+    res.status(500).json(e);
+  }
 };
 
 export const userRoutes = (app: express.Application): void => {
