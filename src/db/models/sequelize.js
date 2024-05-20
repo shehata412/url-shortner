@@ -18,5 +18,6 @@ const sequelize = new Sequelize(
 );
 
 const User = UserModel(sequelize, Sequelize);
+const URL = UserModel(sequelize, Sequelize);
 
-export { sequelize, User };
+export { sequelize, User, URL };
